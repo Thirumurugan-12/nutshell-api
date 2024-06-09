@@ -13,6 +13,10 @@ model = joblib.load('rta_model_deploy3.joblib')
 # Load the one-hot encoder
 encoder = joblib.load('ordinal_encoder2.joblib')
 
+@app.route('/')
+def home():
+    return 'RTA Prediction API'
+
 @app.route('/predict', methods=['POST'])
 def predict():
     # Get the input data from the request
