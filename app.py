@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 from flask_cors import CORS
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -45,6 +46,39 @@ def predict():
 
     # Return the prediction as JSON
     return jsonify({'prediction': prediction})
+
+@app.route('/process_data', methods=['POST'])
+def process_data():
+    # Get the input from the request
+    data = request.get_json()
+    prediction = data['prediction']
+    nv = data['len']
+    print(prediction)
+    print(len)
+    #ans = data.get('ans')
+    csv_path = data.get('csv_path', 'Copy of Copy of AccidentReports1.csv')
+
+    # Read the CSV file
+    df = pd.read_csv(csv_path)
+    df = df[['Latitude', 'Longitude', 'Severity', 'Road_Condition', 'Weather', 'Main_Cause']].iloc[:60000]
+    
+    # Filter the data
+    df = df[df['Severity'] == prediction][:nv]
+    df = df[df['Latitude'] != ""]
+    df = df[df['Longitude'] != ""]
+    df = df[df['Road_Condition'] != ""]
+    
+    print(prediction[0])
+    #print(ans)
+    print(df['Severity'].unique())
+
+    # Rename columns
+    df = df.rename(columns={'Latitude'.strip(): 'LATITUDE'.strip(), 'Longitude'.strip(): 'LONGITUDE'.strip()})
+
+    # Convert the DataFrame to a JSON response
+    result = df.to_json(orient='records')
+    return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0',port=8080)
