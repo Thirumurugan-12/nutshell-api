@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 from flask_cors import CORS
 import pandas as pd
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -77,7 +78,8 @@ def process_data():
 
     # Convert the DataFrame to a JSON response
     result = df.to_json(orient='records')
-    return jsonify(result)
+    
+    return json.loads(result)
 
 
 if __name__ == '__main__':
