@@ -81,6 +81,51 @@ def process_data():
     
     return json.loads(result)
 
+@app.route('/get_column_data', methods=['POST'])
+def get_column_data():
+    # Get the input from the request
+    data = request.get_json()
+    prediction = data['prediction']
+    column_name = data['column_name']
+    csv_path = data.get('csv_path', 'Copy of Copy of AccidentReports1.csv')
+    nv = data['len']
+
+    # Read the CSV file
+    df = pd.read_csv(csv_path)
+
+    # Filter the data based on prediction
+    filtered_data = df[df['Severity'] == prediction]
+
+    # Get unique values and their counts for the specified column
+    unique_values_counts = filtered_data[column_name].value_counts().head(nv).to_dict()
+
+    return jsonify({column_name: unique_values_counts})
+
+
+@app.route('/get_multi_column_data', methods=['POST'])
+def get_multi_column_data():
+    # Get the input from the request
+    data = request.get_json()
+    prediction = data['prediction']
+    column_names = data['column_names']
+    csv_path = data.get('csv_path', 'Copy of Copy of AccidentReports1.csv')
+    nv = data['len']
+
+    # Read the CSV file
+    df = pd.read_csv(csv_path)
+
+    # Filter the data based on prediction
+    filtered_data = df[df['Severity'] == prediction]
+
+    # Create a dictionary to store unique values and their counts for each column
+    result = {}
+    for column_name in column_names:
+        unique_values_counts = filtered_data[column_name].value_counts().head(nv).to_dict()
+        result[column_name] = unique_values_counts
+
+    return jsonify(result)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0',port=8080)

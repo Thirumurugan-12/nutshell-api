@@ -2,7 +2,7 @@ import requests
 import json
 
 # Set the API endpoint URL
-url = 'http://localhost:5000/predict'
+url = 'https://nutshell-api.azurewebsites.net/predict'
 
 # Define the input data
 input_data = {
